@@ -1,0 +1,196 @@
+<!-- //written by: Prashant -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TO DO List</title>
+    
+    <style>
+  * {
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to right, hsl(202, 87%, 50%), #d8215e);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  .container {
+    background: #bbe4e7;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 500px;
+  }
+
+  h1 {
+    text-align: center;
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: 2000;
+    font-size: 40px;
+    margin-bottom: 1.5rem;
+    color: #3c7cd0;
+  }
+
+  form > div {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+
+  .input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+  }
+
+  .btn {
+    padding: 0.5rem 1rem;
+    background-color: #43c479;
+    color: rgb(255, 255, 255);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  .btn:hover {
+    background-color: #303f9f;
+  }
+
+  .list_elem {
+    background-color: #ffffff;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.2s ease;
+  }
+
+  .list_elem li {
+    list-style: none;
+    font-size: 1rem;
+  }
+
+  .deletebtn {
+    background-color: #e53935;
+    border: none;
+    color: white;
+    padding: 0.4rem 0.75rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  .deletebtn:hover {
+    background-color: #c62828;
+  }
+</style>
+
+  </head>
+  <body>
+    <div class="container">
+      <h1>To Do List</h1>
+      <form action="">
+        <div>
+
+          <input class="input" type="text" />
+          <button class="btn">Add ToDo</button>
+
+        </div>
+
+        <section class="list_div"></section>
+        
+      </form>
+    </div>
+
+    <script>
+        const todosection=document.querySelector(".list_div") //the list in the section tag (get it) 
+
+        const input=document.querySelector(".input");  //the input filled (get it)
+//1. get list
+        const getlist=()=>{
+            return JSON.parse(localStorage.getItem("key"));  //return an array of stringified key-value pairs
+        }
+
+        localtodo=getlist() || [];    // the array having the previous data stored
+        localtodo=[...new Set(localtodo)];  // make it a set before showing duplikcate values
+
+
+//2. show list
+
+        const showlist=(x)=>{
+            console.log(localtodo);          // just for us to see
+            const divElement=document.createElement("div");  //create a div
+            divElement.classList.add("list_elem");   //class would be same as the section(cuz added in that only)
+
+
+            divElement.innerHTML=`<li>${x}</li> <button class="deletebtn">Delete</button>`; //structure of the divElement
+
+            todosection.append(divElement);   //append that in the section tag
+
+        }
+        localtodo.forEach((curr)=>{      //for each item in the localtodo list ...
+            showlist(curr);          //...call the show list to create divs each time
+        })
+
+        
+//3. add list to local
+        const addtodo=(e)=>{      // ...call the function
+            e.preventDefault();   // avoid loss of values(property of forms)
+            //console.log("e");  
+
+            localtodo.push(input.value.trim());   //add the input in the localtodo array after removing white spaces
+            console.log(localtodo);              // just to see
+            //covert to a set
+            localtodo=[...new Set(localtodo)];   // convert to list if duplicates "being" added
+            localStorage.setItem("key",JSON.stringify(localtodo));   //add to local storage(wonder if same could be extended to databases)
+
+            const divElement=document.createElement("div");   // create a div list in section
+            divElement.classList.add("list_elem");          //set the class to that of the section tag
+
+
+            divElement.innerHTML=`<li>${input.value}</li> <button class="deletebtn">Delete</button>`;  ////structure of the divElement
+
+            todosection.append(divElement);
+        }
+
+        document.querySelector(".btn").addEventListener("click",(e)=>{   //when the add button is clicked ...
+            addtodo(e);
+        })
+
+
+// delete
+        const deleteitem=(e)=>{
+            e.preventDefault();
+            console.log(e.target);
+            let toremove=e.target.previousElementSibling.innerText;
+            console.log(toremove);
+            // Remove from localtodo array
+
+            localtodo = localtodo.filter((item) => item !== toremove);
+            localStorage.setItem("key", JSON.stringify(localtodo)); // update local storage
+
+    // Remove from DOM
+    e.target.parentElement.remove();
+        }
+        //document.querySelector(".deletebtn").addEventListene
+        todosection.addEventListener("click",(e)=>{
+            deleteitem(e);
+        })
+    </script>
+  </body>
+</html>
